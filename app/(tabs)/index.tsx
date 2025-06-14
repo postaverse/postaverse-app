@@ -1,76 +1,75 @@
-import React, { useState } from 'react';
-import { Alert, StatusBar } from 'react-native';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import React from 'react';
+import { StatusBar } from 'react-native';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { 
   ScreenLayout, 
   Header, 
-  PostFeed, 
+  InfinitePostFeed, 
   AuthGuard 
 } from '@/src/components';
-import { Post } from '@/src/types';
 import { postsAPI } from '@/src/services/api';
 import { colors } from '@/src/styles';
 
 export default function HomeScreen() {
   const queryClient = useQueryClient();
-  const [refreshing, setRefreshing] = useState(false);
-
-  const {
-    data: feedData,
-    isLoading,
-    error,
-    refetch,
-  } = useQuery({
-    queryKey: ['feed'],
-    queryFn: () => postsAPI.getFeed(),
-    staleTime: 1000 * 60 * 2, // 2 minutes
-  });
-
-  const handleRefresh = async () => {
-    setRefreshing(true);
-    await refetch();
-    setRefreshing(false);
-  };
 
   const handlePostLike = (postId: string, liked: boolean) => {
-    // Optimistically update the cache
+    // Optimistically update the infinite query cache with better error handling
     queryClient.setQueryData(['feed'], (oldData: any) => {
-      if (!oldData) return oldData;
+      if (!oldData?.pages) return oldData;
       
-      return {
+      // Create a deep copy to avoid mutations
+      const newData = {
         ...oldData,
-        data: oldData.data.map((post: Post) =>
-          post.id === postId
-            ? {
+        pages: oldData.pages.map((page: any) => ({
+          ...page,
+          data: page.data.map((post: any) => {
+            if (post.id === postId) {
+              return {
                 ...post,
-                likes_count: liked ? post.likes_count + 1 : post.likes_count - 1,
-              }
-            : post
-        ),
+                likes_count: liked ? (post.likes_count || 0) + 1 : Math.max((post.likes_count || 0) - 1, 0),
+                liked_by_user: liked,
+              };
+            }
+            return post; // Return unchanged post
+          }),
+        })),
       };
+      
+      return newData;
     });
   };
 
   const handlePostDelete = async (postId: string) => {
     try {
+      // Call the API first
       await postsAPI.deletePost(postId);
-      // Remove from cache
+      
+      // Then update the cache with better error handling
       queryClient.setQueryData(['feed'], (oldData: any) => {
-        if (!oldData) return oldData;
-        return {
+        if (!oldData?.pages) return oldData;
+        
+        // Create a deep copy and filter out the deleted post
+        const newData = {
           ...oldData,
-          data: oldData.data.filter((post: Post) => post.id !== postId),
+          pages: oldData.pages.map((page: any) => ({
+            ...page,
+            data: page.data.filter((post: any) => post.id !== postId),
+          })),
         };
+        
+        return newData;
       });
-      Alert.alert('Success', 'Post deleted successfully');
+      
+      // Invalidate related queries to ensure consistency
+      queryClient.invalidateQueries({ queryKey: ['user-posts'] });
     } catch (error) {
       console.error('Error deleting post:', error);
-      Alert.alert('Error', 'Failed to delete post');
+      // Revert optimistic update by refetching
+      queryClient.invalidateQueries({ queryKey: ['feed'] });
     }
   };
-
-  const posts = feedData?.data || [];
 
   return (
     <AuthGuard>
@@ -79,12 +78,9 @@ export default function HomeScreen() {
         
         <Header title="Postaverse" />
 
-        <PostFeed
-          posts={posts}
-          isLoading={isLoading}
-          error={error}
-          refreshing={refreshing}
-          onRefresh={handleRefresh}
+        <InfinitePostFeed
+          queryKey={['feed']}
+          queryFn={postsAPI.getFeed}
           onPostLike={handlePostLike}
           onPostDelete={handlePostDelete}
         />

@@ -19,6 +19,7 @@ export { Header } from './Header';
 export { FormInput, ActionButton } from './FormComponents';
 export { ScreenLayout, CardLayout, ListContainer } from './LayoutComponents';
 export { BlogCard } from './BlogCard';
-export { Feed, PostFeed, BlogFeed, FeedContainer } from './FeedComponents';
+export { Feed, PostFeed, BlogFeed, FeedContainer, InfinitePostFeed, InfiniteBlogFeed } from './FeedComponents';
+export { InfiniteScrollList } from './InfiniteScrollList';
 export { AuthGuard } from './AuthGuard';
 export { CreateForm } from './CreateForm';

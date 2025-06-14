@@ -2,9 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  ScrollView,
   TouchableOpacity,
-  RefreshControl,
   ActivityIndicator,
   Alert,
   StatusBar,
@@ -15,10 +13,12 @@ import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
+import { InfiniteScrollList } from '@/src/components/InfiniteScrollList';
 import { PostCard } from '@/src/components/PostCard';
 import { useAuth } from '@/src/contexts/AuthContext';
 import { usersAPI, postsAPI } from '@/src/services/api';
 import { Post } from '@/src/types';
+import { useInfiniteScroll } from '@/src/hooks/useInfiniteScroll';
 
 import { userProfileStyles as styles } from '@/src/styles';
 
@@ -52,21 +52,23 @@ export default function UserProfileScreen() {
   const {
     data: userPostsData,
     isLoading: postsLoading,
-    refetch: refetchPosts,
-  } = useQuery({
+    error: postsError,
+    refreshing: postsRefreshing,
+    onRefresh: onPostsRefresh,
+    onLoadMore,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteScroll<Post>({
     queryKey: ['user-posts', id],
-    queryFn: () => usersAPI.getUserPosts(id!),
+    queryFn: (page) => usersAPI.getUserPosts(id!, page),
     enabled: !!id,
-    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
   const handleRefresh = async () => {
-    setRefreshing(true);
     await Promise.all([
       refetchUser(),
-      refetchPosts(),
+      onPostsRefresh(),
     ]);
-    setRefreshing(false);
   };
 
   const handleFollowToggle = async () => {
@@ -91,20 +93,23 @@ export default function UserProfileScreen() {
   };
 
   const handlePostLike = (postId: string, liked: boolean) => {
-    // Update cache optimistically
+    // Update cache optimistically for infinite query
     queryClient.setQueryData(['user-posts', id], (oldData: any) => {
-      if (!oldData) return oldData;
+      if (!oldData?.pages) return oldData;
       
       return {
         ...oldData,
-        data: oldData.data.map((post: Post) =>
-          post.id === postId
-            ? {
-                ...post,
-                likes_count: liked ? post.likes_count + 1 : post.likes_count - 1,
-              }
-            : post
-        ),
+        pages: oldData.pages.map((page: any) => ({
+          ...page,
+          data: page.data.map((post: Post) =>
+            post.id === postId
+              ? {
+                  ...post,
+                  likes_count: liked ? post.likes_count + 1 : post.likes_count - 1,
+                }
+              : post
+          ),
+        })),
       };
     });
   };
@@ -112,12 +117,15 @@ export default function UserProfileScreen() {
   const handlePostDelete = async (postId: string) => {
     try {
       await postsAPI.deletePost(postId);
-      // Remove from cache
+      // Remove from infinite query cache
       queryClient.setQueryData(['user-posts', id], (oldData: any) => {
-        if (!oldData) return oldData;
+        if (!oldData?.pages) return oldData;
         return {
           ...oldData,
-          data: oldData.data.filter((post: Post) => post.id !== postId),
+          pages: oldData.pages.map((page: any) => ({
+            ...page,
+            data: page.data.filter((post: Post) => post.id !== postId),
+          })),
         };
       });
       // Also invalidate feed
@@ -167,9 +175,88 @@ export default function UserProfileScreen() {
     );
   }
 
-  const posts = userPostsData?.data || [];
+  const posts = userPostsData || [];
   const isLoading = postsLoading;
   const isOwnProfile = currentUser?.id === user.id;
+
+  // Profile header component for the InfiniteScrollList
+  const renderProfileHeader = () => (
+    <>
+      {/* Profile Header */}
+      <View style={styles.profileHeader}>
+        <View style={styles.profileInfo}>
+          <Image
+            source={{ uri: user.profile_photo_url }}
+            style={styles.profileImage}
+            placeholder={{ blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' }}
+            transition={1000}
+          />
+          <View style={styles.profileDetails}>
+            <Text style={styles.profileName}>{user.name || user.handle}</Text>
+            <Text style={styles.profileHandle}>@{user.handle}</Text>
+            {user.bio && (
+              <Text style={styles.profileBio}>{user.bio}</Text>
+            )}
+            {user.website && (
+              <Text style={styles.profileWebsite}>{user.website}</Text>
+            )}
+          </View>
+        </View>
+
+        {/* Follow Button */}
+        {!isOwnProfile && currentUser && (
+          <TouchableOpacity
+            style={[
+              styles.followButton,
+              isFollowing && styles.followingButton,
+              isToggling && styles.followButtonDisabled
+            ]}
+            onPress={handleFollowToggle}
+            disabled={isToggling}
+          >
+            {isToggling ? (
+              <ActivityIndicator size="small" color="#ffffff" />
+            ) : (
+              <>
+                <Ionicons
+                  name={isFollowing ? "person-remove" : "person-add"}
+                  size={16}
+                  color="#ffffff"
+                />
+                <Text style={styles.followButtonText}>
+                  {isFollowing ? 'Unfollow' : 'Follow'}
+                </Text>
+              </>
+            )}
+          </TouchableOpacity>
+        )}
+      </View>
+
+      {/* Profile Stats */}
+      <View style={styles.statsContainer}>
+        <View style={styles.statItem}>
+          <Text style={styles.statNumber}>{user.posts_count || posts.length}</Text>
+          <Text style={styles.statLabel}>Posts</Text>
+        </View>
+        <View style={styles.statItem}>
+          <Text style={styles.statNumber}>{user.followers_count || 0}</Text>
+          <Text style={styles.statLabel}>Followers</Text>
+        </View>
+        <View style={styles.statItem}>
+          <Text style={styles.statNumber}>{user.following_count || 0}</Text>
+          <Text style={styles.statLabel}>Following</Text>
+        </View>
+      </View>
+    </>
+  );
+
+  const renderPostItem = ({ item }: { item: Post }) => (
+    <PostCard
+      post={item}
+      onLike={handlePostLike}
+      onDelete={isOwnProfile ? handlePostDelete : undefined}
+    />
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -183,115 +270,31 @@ export default function UserProfileScreen() {
         <Text style={styles.headerTitle}>{user.name || user.handle}</Text>
       </View>
 
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={handleRefresh}
-            tintColor="#38bdf8"
-            colors={['#38bdf8']}
-          />
-        }
-        showsVerticalScrollIndicator={false}
-      >
+      <View style={{ flex: 1 }}>
         {/* Profile Header */}
-        <View style={styles.profileHeader}>
-          <View style={styles.profileInfo}>
-            <Image
-              source={{ uri: user.profile_photo_url }}
-              style={styles.profileImage}
-              placeholder={{ blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' }}
-              transition={1000}
-            />
-            <View style={styles.profileDetails}>
-              <Text style={styles.profileName}>{user.name || user.handle}</Text>
-              <Text style={styles.profileHandle}>@{user.handle}</Text>
-              {user.bio && (
-                <Text style={styles.profileBio}>{user.bio}</Text>
-              )}
-              {user.website && (
-                <Text style={styles.profileWebsite}>{user.website}</Text>
-              )}
-            </View>
-          </View>
-
-          {/* Follow Button */}
-          {!isOwnProfile && currentUser && (
-            <TouchableOpacity
-              style={[
-                styles.followButton,
-                isFollowing && styles.followingButton,
-                isToggling && styles.followButtonDisabled
-              ]}
-              onPress={handleFollowToggle}
-              disabled={isToggling}
-            >
-              {isToggling ? (
-                <ActivityIndicator size="small" color="#ffffff" />
-              ) : (
-                <>
-                  <Ionicons
-                    name={isFollowing ? "person-remove" : "person-add"}
-                    size={16}
-                    color="#ffffff"
-                  />
-                  <Text style={styles.followButtonText}>
-                    {isFollowing ? 'Unfollow' : 'Follow'}
-                  </Text>
-                </>
-              )}
-            </TouchableOpacity>
-          )}
-        </View>
-
-        {/* Profile Stats */}
-        <View style={styles.statsContainer}>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{user.posts_count || posts.length}</Text>
-            <Text style={styles.statLabel}>Posts</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{user.followers_count || 0}</Text>
-            <Text style={styles.statLabel}>Followers</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>{user.following_count || 0}</Text>
-            <Text style={styles.statLabel}>Following</Text>
-          </View>
-        </View>
-
-        {/* Posts Content */}
-        <View style={styles.contentContainer}>
-          {isLoading && !refreshing ? (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#38bdf8" />
-              <Text style={styles.loadingText}>Loading posts...</Text>
-            </View>
-          ) : posts.length === 0 ? (
-            <View style={styles.emptyContainer}>
-              <Ionicons name="document-text-outline" size={64} color="#4b5563" />
-              <Text style={styles.emptyText}>No posts yet</Text>
-              <Text style={styles.emptySubtext}>
-                {isOwnProfile 
-                  ? "You haven't created any posts yet"
-                  : `${user.name || user.handle} hasn't posted anything yet`
-                }
-              </Text>
-            </View>
-          ) : (
-            posts.map((post: Post) => (
-              <PostCard
-                key={post.id}
-                post={post}
-                onLike={handlePostLike}
-                onDelete={isOwnProfile ? handlePostDelete : undefined}
-              />
-            ))
-          )}
-        </View>
-      </ScrollView>
+        {renderProfileHeader()}
+        
+        {/* Posts List */}
+        <InfiniteScrollList
+          data={posts}
+          renderItem={renderPostItem}
+          isLoading={isLoading}
+          error={postsError}
+          refreshing={postsRefreshing}
+          onRefresh={handleRefresh}
+          onLoadMore={onLoadMore}
+          hasNextPage={hasNextPage || false}
+          isFetchingNextPage={isFetchingNextPage}
+          emptyTitle="No posts yet"
+          emptySubtitle={
+            isOwnProfile 
+              ? "You haven't created any posts yet"
+              : `${user.name || user.handle} hasn't posted anything yet`
+          }
+          style={{ flex: 1 }}
+          showsVerticalScrollIndicator={false}
+        />
+      </View>
     </SafeAreaView>
   );
 }

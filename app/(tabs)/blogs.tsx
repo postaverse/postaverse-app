@@ -1,91 +1,88 @@
 import React from 'react';
 import { StatusBar } from 'react-native';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { 
   AuthGuard, 
   Header, 
   ScreenLayout, 
-  FeedContainer, 
-  BlogCard 
+  InfiniteBlogFeed 
 } from '@/src/components';
 import { blogsAPI } from '@/src/services/api';
-import { Blog } from '@/src/types';
 import { colors } from '@/src/styles';
 
 export default function BlogsScreen() {
   const queryClient = useQueryClient();
 
-  const {
-    data: blogsData,
-    isLoading,
-    error,
-    refetch,
-  } = useQuery({
-    queryKey: ['blogs'],
-    queryFn: () => blogsAPI.getBlogs(),
-    staleTime: 1000 * 60 * 2, // 2 minutes
-  });
-
   const handleBlogLike = (blogId: string, liked: boolean) => {
-    // Optimistically update the cache
+    // Optimistically update the specific blog cache (not all caches)
     queryClient.setQueryData(['blogs'], (oldData: any) => {
-      if (!oldData) return oldData;
+      if (!oldData?.pages) return oldData;
       
-      return {
+      // Create a deep copy to avoid mutations
+      const newData = {
         ...oldData,
-        data: oldData.data.map((blog: Blog) =>
-          blog.id === blogId
-            ? {
+        pages: oldData.pages.map((page: any) => ({
+          ...page,
+          data: page.data.map((blog: any) => {
+            if (blog.id === blogId) {
+              return {
                 ...blog,
-                likes_count: liked ? blog.likes_count + 1 : blog.likes_count - 1,
-              }
-            : blog
-        ),
+                likes_count: liked ? (blog.likes_count || 0) + 1 : Math.max((blog.likes_count || 0) - 1, 0),
+                liked_by_user: liked,
+              };
+            }
+            return blog; // Return unchanged blog
+          }),
+        })),
       };
+      
+      return newData;
     });
   };
 
   const handleBlogDelete = async (blogId: string) => {
     try {
+      // Call the API first
       await blogsAPI.deleteBlog(blogId);
-      // Remove from cache
+      
+      // Remove from the blog cache with better error handling
       queryClient.setQueryData(['blogs'], (oldData: any) => {
-        if (!oldData) return oldData;
-        return {
+        if (!oldData?.pages) return oldData;
+        
+        // Create a deep copy and filter out the deleted blog
+        const newData = {
           ...oldData,
-          data: oldData.data.filter((blog: Blog) => blog.id !== blogId),
+          pages: oldData.pages.map((page: any) => ({
+            ...page,
+            data: page.data.filter((blog: any) => blog.id !== blogId),
+          })),
         };
+        
+        return newData;
       });
+      
+      // Invalidate related queries
+      queryClient.invalidateQueries({ queryKey: ['user-blogs'] });
     } catch (error) {
       console.error('Error deleting blog:', error);
+      // Revert optimistic update by refetching
+      queryClient.invalidateQueries({ queryKey: ['blogs'] });
     }
   };
-
-  const blogs = blogsData?.data || [];
 
   return (
     <AuthGuard>
       <StatusBar barStyle="light-content" backgroundColor={colors.background.primary} />
       
-      <ScreenLayout scrollable onRefresh={refetch}>
+      <ScreenLayout backgroundColor={colors.background.primary}>
         <Header title="Blogs" />
         
-        <FeedContainer
-          data={blogs}
-          isLoading={isLoading}
-          error={error}
-          renderItem={(blog: Blog) => (
-            <BlogCard
-              key={blog.id}
-              blog={blog}
-              onLike={handleBlogLike}
-              onDelete={handleBlogDelete}
-            />
-          )}
-          emptyTitle="No blogs yet"
-          emptySubtitle="Be the first to share a blog post!"
-          loadingMessage="Loading blogs..."
+        <InfiniteBlogFeed
+          queryKey={['blogs']}
+          queryFn={blogsAPI.getBlogs}
+          onBlogLike={handleBlogLike}
+          onBlogDelete={handleBlogDelete}
         />
       </ScreenLayout>
     </AuthGuard>
