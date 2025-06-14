@@ -15,8 +15,11 @@ import {
   UpdateProfileData,
 } from '../types';
 
-// Configure your Laravel backend URL here
-const BASE_URL = 'http://localhost:8000/api';
+const IS_DEV = 0; // 1 for development, 0 for production
+
+const BASE_URL = IS_DEV 
+  ? 'http://localhost:8000/api'
+  : 'https://postaverse.net/api';
 
 // Create axios instance
 const api = axios.create({
