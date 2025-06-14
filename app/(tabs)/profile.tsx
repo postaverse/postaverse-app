@@ -17,6 +17,7 @@ import { router } from 'expo-router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { PostCard } from '@/src/components/PostCard';
+import { ConfirmationDialog } from '@/src/components/ConfirmationDialog';
 import { useAuth } from '@/src/contexts/AuthContext';
 import { usersAPI, postsAPI } from '@/src/services/api';
 import { Post } from '@/src/types';
@@ -26,6 +27,7 @@ export default function ProfileScreen() {
   const { user, logout } = useAuth();
   const queryClient = useQueryClient();
   const [refreshing, setRefreshing] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const {
     data: userPostsData,
     isLoading: postsLoading,
@@ -44,25 +46,21 @@ export default function ProfileScreen() {
   };
 
   const handleLogout = () => {
-    Alert.alert(
-      'Sign Out',
-      'Are you sure you want to sign out?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Sign Out',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await logout();
-              router.replace('/auth');
-            } catch (error) {
-              console.error('Logout error:', error);
-            }
-          },
-        },
-      ]
-    );
+    setShowLogoutConfirm(true);
+  };
+
+  const handleConfirmLogout = async () => {
+    setShowLogoutConfirm(false);
+    try {
+      await logout();
+      router.replace('/auth');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
+  const handleCancelLogout = () => {
+    setShowLogoutConfirm(false);
   };
 
   const handlePostLike = (postId: string, liked: boolean) => {
@@ -212,6 +210,18 @@ export default function ProfileScreen() {
           )}
         </View>
       </ScrollView>
+
+      {/* Logout Confirmation Dialog */}
+      <ConfirmationDialog
+        visible={showLogoutConfirm}
+        title="Sign Out"
+        message="Are you sure you want to sign out?"
+        confirmText="Sign Out"
+        cancelText="Cancel"
+        confirmStyle="destructive"
+        onConfirm={handleConfirmLogout}
+        onCancel={handleCancelLogout}
+      />
     </SafeAreaView>
   );
 }
