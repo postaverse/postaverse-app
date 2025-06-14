@@ -217,6 +217,7 @@ interface InfinitePostFeedProps {
   enabled?: boolean;
   emptyTitle?: string;
   emptySubtitle?: string;
+  ListHeaderComponent?: React.ComponentType<any> | React.ReactElement | null;
 }
 
 export const InfinitePostFeed: React.FC<InfinitePostFeedProps> = ({
@@ -227,6 +228,7 @@ export const InfinitePostFeed: React.FC<InfinitePostFeedProps> = ({
   enabled = true,
   emptyTitle = "No posts in your feed",
   emptySubtitle = "Follow some users to see their posts here",
+  ListHeaderComponent,
 }) => {
   const {
     data: posts,
@@ -266,6 +268,7 @@ export const InfinitePostFeed: React.FC<InfinitePostFeedProps> = ({
       hasNextPage={hasNextPage}
       emptyTitle={emptyTitle}
       emptySubtitle={emptySubtitle}
+      ListHeaderComponent={ListHeaderComponent}
       loadingMessage="Loading posts..."
       estimatedItemSize={250}
     />

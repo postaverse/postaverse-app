@@ -11,6 +11,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Comment, BlogComment } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import { useDialog } from '../contexts/DialogContext';
+import { MarkdownRenderer } from './MarkdownRenderer';
 import { router } from 'expo-router';
 
 interface CommentCardProps {
@@ -130,7 +131,13 @@ export const CommentCard: React.FC<CommentCardProps> = ({
             Content hidden due to profanity
           </Text>
         ) : (
-          <Text style={styles.content}>{comment.content}</Text>
+          <MarkdownRenderer
+            variant="comment"
+            showFullContent={true}
+            style={styles.content}
+          >
+            {comment.content}
+          </MarkdownRenderer>
         )}
       </View>
 

@@ -15,6 +15,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useDialog } from '../contexts/DialogContext';
 import { router } from 'expo-router';
 import { ImageModal } from './ImageModal';
+import { MarkdownRenderer } from './MarkdownRenderer';
 import { postCardStyles as styles } from '../styles';
 
 interface PostCardProps {
@@ -131,13 +132,6 @@ export const PostCard: React.FC<PostCardProps> = ({
     setSelectedImageUrl(null);
   };
 
-  const truncateContent = (content: string, maxLength: number = 300) => {
-    if (showFullContent || content.length <= maxLength) {
-      return content;
-    }
-    return content.substring(0, maxLength) + '...';
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.card}>
@@ -188,16 +182,15 @@ export const PostCard: React.FC<PostCardProps> = ({
 
         {/* Content */}
         <View style={styles.content}>
-          <Text style={styles.contentText}>
-            {truncateContent(post.content)}
-          </Text>
-          {!showFullContent && post.content.length > 256 && (
-            <TouchableOpacity onPress={handlePostPress}>
-              <Text style={[styles.contentText, { color: '#38bdf8', marginTop: 8 }]}>
-                Read more...
-              </Text>
-            </TouchableOpacity>
-          )}
+          <MarkdownRenderer
+            variant="post"
+            showFullContent={showFullContent}
+            truncateLength={300}
+            onSeeMore={handlePostPress}
+            style={styles.contentText}
+          >
+            {post.content}
+          </MarkdownRenderer>
         </View>
 
         {/* Images */}

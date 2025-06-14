@@ -14,6 +14,7 @@ import { useAuth } from '@/src/contexts/AuthContext';
 import { Comment, BlogComment } from '@/src/types';
 import { commentStyles } from '@/src/styles';
 import { ConfirmationDialog } from './ConfirmationDialog';
+import { MarkdownRenderer } from './MarkdownRenderer';
 
 interface UnifiedCommentCardProps {
   comment: Comment | BlogComment;
@@ -137,7 +138,13 @@ export const UnifiedCommentCard: React.FC<UnifiedCommentCardProps> = ({
       </View>
 
       {/* Comment Content */}
-      <Text style={commentStyles.commentContent}>{comment.content}</Text>
+      <MarkdownRenderer
+        variant="comment"
+        showFullContent={true}
+        style={commentStyles.commentContent}
+      >
+        {comment.content}
+      </MarkdownRenderer>
 
       {/* Comment Actions */}
       {canReply && (

@@ -30,6 +30,7 @@ interface InfiniteScrollListProps<T> {
   style?: any;
   showsVerticalScrollIndicator?: boolean;
   estimatedItemSize?: number;
+  ListHeaderComponent?: React.ComponentType<any> | React.ReactElement | null;
 }
 
 const LoadMoreIndicator = () => (
@@ -96,6 +97,7 @@ export function InfiniteScrollList<T extends { id: string }>({
   contentContainerStyle = { padding: spacing.md },
   style = { flex: 1 },
   showsVerticalScrollIndicator = false,
+  ListHeaderComponent,
 }: InfiniteScrollListProps<T>) {
   // Handle initial loading state
   if (isLoading && data.length === 0) {
@@ -169,6 +171,7 @@ export function InfiniteScrollList<T extends { id: string }>({
       style={style}
       contentContainerStyle={contentContainerStyle}
       showsVerticalScrollIndicator={showsVerticalScrollIndicator}
+      ListHeaderComponent={ListHeaderComponent}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}

@@ -23,3 +23,4 @@ export { Feed, PostFeed, BlogFeed, FeedContainer, InfinitePostFeed, InfiniteBlog
 export { InfiniteScrollList } from './InfiniteScrollList';
 export { AuthGuard } from './AuthGuard';
 export { CreateForm } from './CreateForm';
+export { MarkdownRenderer } from './MarkdownRenderer';

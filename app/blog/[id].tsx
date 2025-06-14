@@ -18,6 +18,7 @@ import { Stack } from 'expo-router';
 
 import { useAuth } from '@/src/contexts/AuthContext';
 import { useDialog } from '@/src/contexts/DialogContext';
+import { MarkdownRenderer } from '@/src/components/MarkdownRenderer';
 import { blogsAPI, commentsAPI } from '@/src/services/api';
 import { Blog, User, BlogComment } from '@/src/types';
 import { LoadingState, ErrorState, EmptyState, BlogHeader, UnifiedComments } from '@/src/components';
@@ -253,7 +254,13 @@ export default function BlogDetailScreen() {
             <Text style={blogDetailStyles.blogTitle}>{blog.title || 'Untitled'}</Text>
 
             {/* Blog Content */}
-            <Text style={blogDetailStyles.blogContent}>{blog.content || ''}</Text>
+            <MarkdownRenderer
+              variant="blog"
+              showFullContent={true}
+              style={blogDetailStyles.blogContent}
+            >
+              {blog.content || ''}
+            </MarkdownRenderer>
 
             {/* Blog Actions */}
             <View style={blogDetailStyles.blogActions}>

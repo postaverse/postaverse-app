@@ -13,6 +13,7 @@ import { router } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 
 import { searchStyles, colors } from '@/src/styles';
+import { MarkdownRenderer } from '@/src/components/MarkdownRenderer';
 
 import {
   AuthGuard,
@@ -40,7 +41,16 @@ const UserCard: React.FC<UserCardProps> = ({ user, onPress }) => (
         <View style={searchStyles.userInfo}>
           <Text style={searchStyles.userName}>{user.name}</Text>
           <Text style={searchStyles.userHandle}>@{user.handle}</Text>
-          {user.bio && <Text style={searchStyles.userBio} numberOfLines={2}>{user.bio}</Text>}
+          {user.bio && (
+            <MarkdownRenderer
+              variant="bio"
+              showFullContent={false}
+              truncateLength={100}
+              style={searchStyles.userBio}
+            >
+              {user.bio}
+            </MarkdownRenderer>
+          )}
         </View>
         <View style={searchStyles.userStats}>
           <Text style={searchStyles.userStat}>{user.followers_count || 0} followers</Text>

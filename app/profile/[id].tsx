@@ -15,6 +15,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { InfiniteScrollList } from '@/src/components/InfiniteScrollList';
 import { PostCard } from '@/src/components/PostCard';
+import { MarkdownRenderer } from '@/src/components/MarkdownRenderer';
 import { useAuth } from '@/src/contexts/AuthContext';
 import { usersAPI, postsAPI } from '@/src/services/api';
 import { Post } from '@/src/types';
@@ -195,7 +196,14 @@ export default function UserProfileScreen() {
             <Text style={styles.profileName}>{user.name || user.handle}</Text>
             <Text style={styles.profileHandle}>@{user.handle}</Text>
             {user.bio && (
-              <Text style={styles.profileBio}>{user.bio}</Text>
+              <MarkdownRenderer
+                variant="bio"
+                showFullContent={false}
+                truncateLength={200}
+                style={styles.profileBio}
+              >
+                {user.bio}
+              </MarkdownRenderer>
             )}
             {user.website && (
               <Text style={styles.profileWebsite}>{user.website}</Text>

@@ -8,6 +8,7 @@ import { useAuth } from '@/src/contexts/AuthContext';
 import { useDialog } from '@/src/contexts/DialogContext';
 import { CardLayout } from './LayoutComponents';
 import { ImageModal } from './ImageModal';
+import { MarkdownRenderer } from './MarkdownRenderer';
 import { blogCardStyles } from '@/src/styles/';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -88,7 +89,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onLike, onDelete }) =>
   };
 
   return (
-    <CardLayout>
+    <CardLayout margin={16}>
       {/* Blog Header */}
       <TouchableOpacity style={blogCardStyles.blogHeader} onPress={handleUserPress}>
         <Image
@@ -109,9 +110,15 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onLike, onDelete }) =>
       {/* Blog Content */}
       <TouchableOpacity onPress={handleBlogPress}>
         <Text style={blogCardStyles.blogTitle}>{blog.title}</Text>
-        <Text style={blogCardStyles.blogExcerpt} numberOfLines={3}>
+        <MarkdownRenderer
+          variant="blog"
+          showFullContent={false}
+          truncateLength={200}
+          onSeeMore={handleBlogPress}
+          style={blogCardStyles.blogExcerpt}
+        >
           {blog.content}
-        </Text>
+        </MarkdownRenderer>
       </TouchableOpacity>
 
       {/* Blog Images */}

@@ -12,6 +12,7 @@ import { router } from 'expo-router';
 
 import { useAuth } from '@/src/contexts/AuthContext';
 import { useDialog } from '@/src/contexts/DialogContext';
+import { MarkdownRenderer } from './MarkdownRenderer';
 import { BlogComment } from '@/src/types';
 import { commentStyles } from '@/src/styles';
 
@@ -129,7 +130,13 @@ export const CommentCard: React.FC<CommentCardProps> = ({
         </View>
       </View>
 
-      <Text style={commentStyles.commentContent}>{comment.content}</Text>
+      <MarkdownRenderer
+        variant="comment"
+        showFullContent={true}
+        style={commentStyles.commentContent}
+      >
+        {comment.content}
+      </MarkdownRenderer>
 
       {/* Comment Actions */}
       {level < 2 && currentUser && (
