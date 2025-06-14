@@ -100,7 +100,7 @@ export const CommentCard: React.FC<CommentCardProps> = ({
       <View style={styles.header}>
         <TouchableOpacity style={styles.userInfo} onPress={handleUserPress}>
           <Image
-            source={{ uri: comment.user?.profile_photo_url || 'https://via.placeholder.com/32' }}
+            source={{ uri: comment.user?.profile_photo_url }}
             style={styles.avatar}
             placeholder={{ blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' }}
             transition={1000}

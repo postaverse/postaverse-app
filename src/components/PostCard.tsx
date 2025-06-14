@@ -14,6 +14,7 @@ import { postsAPI } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useDialog } from '../contexts/DialogContext';
 import { router } from 'expo-router';
+import { ImageModal } from './ImageModal';
 import { postCardStyles as styles } from '../styles';
 
 interface PostCardProps {
@@ -36,6 +37,8 @@ export const PostCard: React.FC<PostCardProps> = ({
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likes_count || post.likes?.length || 0);
   const [isLiking, setIsLiking] = useState(false);
+  const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null);
+  const [imageModalVisible, setImageModalVisible] = useState(false);
 
   // Update isLiked when currentUser or post.likes changes
   React.useEffect(() => {
@@ -118,6 +121,16 @@ export const PostCard: React.FC<PostCardProps> = ({
     }
   };
 
+  const handleImagePress = (imageUrl: string) => {
+    setSelectedImageUrl(imageUrl);
+    setImageModalVisible(true);
+  };
+
+  const handleCloseImageModal = () => {
+    setImageModalVisible(false);
+    setSelectedImageUrl(null);
+  };
+
   const truncateContent = (content: string, maxLength: number = 300) => {
     if (showFullContent || content.length <= maxLength) {
       return content;
@@ -132,7 +145,7 @@ export const PostCard: React.FC<PostCardProps> = ({
         <View style={styles.header}>
           <View style={styles.userInfo}>
             <Image
-              source={{ uri: post.user?.profile_photo_url || 'https://via.placeholder.com/40' }}
+              source={{ uri: post.user?.profile_photo_url }}
               style={styles.profileImage}
               placeholder={{ blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' }}
               transition={1000}
@@ -195,18 +208,23 @@ export const PostCard: React.FC<PostCardProps> = ({
             style={{ marginBottom: 16 }}
           >
             {post.images.map((image, index) => (
-              <Image
+              <TouchableOpacity
                 key={image.id}
-                source={{ uri: image.url }}
-                style={{
-                  width: screenWidth * 0.7,
-                  height: 200,
-                  borderRadius: 8,
-                  marginRight: index < (post.images?.length || 0) - 1 ? 12 : 0,
-                }}
-                placeholder={{ blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' }}
-                transition={1000}
-              />
+                onPress={() => handleImagePress(image.url)}
+                activeOpacity={0.8}
+              >
+                <Image
+                  source={{ uri: image.url }}
+                  style={{
+                    width: screenWidth * 0.7,
+                    height: 200,
+                    borderRadius: 8,
+                    marginRight: index < (post.images?.length || 0) - 1 ? 12 : 0,
+                  }}
+                  placeholder={{ blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' }}
+                  transition={1000}
+                />
+              </TouchableOpacity>
             ))}
           </ScrollView>
         )}
@@ -239,6 +257,13 @@ export const PostCard: React.FC<PostCardProps> = ({
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* Image Modal */}
+      <ImageModal
+        visible={imageModalVisible}
+        imageUrl={selectedImageUrl || ''}
+        onClose={handleCloseImageModal}
+      />
     </View>
   );
 };

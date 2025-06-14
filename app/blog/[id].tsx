@@ -226,7 +226,7 @@ export default function BlogDetailScreen() {
             <View style={blogDetailStyles.blogHeader}>
               <TouchableOpacity style={blogDetailStyles.userInfo} onPress={handleUserPress}>
                 <Image
-                  source={{ uri: blog.user?.profile_photo_url || 'https://via.placeholder.com/48' }}
+                  source={{ uri: blog.user?.profile_photo_url }}
                   style={blogDetailStyles.userAvatar}
                   placeholder={{ blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' }}
                   transition={1000}

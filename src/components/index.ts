@@ -7,6 +7,7 @@ export { BlogHeader } from './BlogHeader';
 export { CommentInput } from './CommentInput';
 export { ConfirmationDialog } from './ConfirmationDialog';
 export { StarsBackground } from './StarsBackground';
+export { ImageModal } from './ImageModal';
 
 // Unified comment system
 export { UnifiedCommentCard } from './UnifiedCommentCard';

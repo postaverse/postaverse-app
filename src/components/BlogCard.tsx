@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -7,7 +7,10 @@ import { Blog } from '@/src/types';
 import { useAuth } from '@/src/contexts/AuthContext';
 import { useDialog } from '@/src/contexts/DialogContext';
 import { CardLayout } from './LayoutComponents';
+import { ImageModal } from './ImageModal';
 import { blogCardStyles } from '@/src/styles/';
+
+const { width: screenWidth } = Dimensions.get('window');
 
 interface BlogCardProps {
   blog: Blog;
@@ -18,6 +21,8 @@ interface BlogCardProps {
 export const BlogCard: React.FC<BlogCardProps> = ({ blog, onLike, onDelete }) => {
   const { user: currentUser } = useAuth();
   const { showConfirm } = useDialog();
+  const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null);
+  const [imageModalVisible, setImageModalVisible] = useState(false);
 
   const handleUserPress = () => {
     if (blog.user?.id) {
@@ -27,6 +32,16 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onLike, onDelete }) =>
 
   const handleBlogPress = () => {
     router.push(`/blog/${blog.id}` as any);
+  };
+
+  const handleImagePress = (imageUrl: string) => {
+    setSelectedImageUrl(imageUrl);
+    setImageModalVisible(true);
+  };
+
+  const handleCloseImageModal = () => {
+    setImageModalVisible(false);
+    setSelectedImageUrl(null);
   };
 
   const handleLike = () => {
@@ -77,7 +92,7 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onLike, onDelete }) =>
       {/* Blog Header */}
       <TouchableOpacity style={blogCardStyles.blogHeader} onPress={handleUserPress}>
         <Image
-          source={{ uri: blog.user?.profile_photo_url || 'https://via.placeholder.com/40' }}
+          source={{ uri: blog.user?.profile_photo_url }}
           style={blogCardStyles.userAvatar}
         />
         <View style={blogCardStyles.userInfo}>
@@ -98,6 +113,35 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onLike, onDelete }) =>
           {blog.content}
         </Text>
       </TouchableOpacity>
+
+      {/* Blog Images */}
+      {blog.images && blog.images.length > 0 && (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={{ marginTop: 12, marginBottom: 16 }}
+        >
+          {blog.images.map((image, index) => (
+            <TouchableOpacity
+              key={image.id}
+              onPress={() => handleImagePress(image.url)}
+              activeOpacity={0.8}
+            >
+              <Image
+                source={{ uri: image.url }}
+                style={{
+                  width: screenWidth * 0.6,
+                  height: 160,
+                  borderRadius: 8,
+                  marginRight: index < (blog.images?.length || 0) - 1 ? 12 : 0,
+                }}
+                placeholder={{ blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' }}
+                transition={1000}
+              />
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      )}
 
       {/* Blog Footer */}
       <View style={blogCardStyles.blogFooter}>
@@ -129,6 +173,13 @@ export const BlogCard: React.FC<BlogCardProps> = ({ blog, onLike, onDelete }) =>
           <Ionicons name="share-outline" size={20} color="#9ca3af" />
         </TouchableOpacity>
       </View>
+
+      {/* Image Modal */}
+      <ImageModal
+        visible={imageModalVisible}
+        imageUrl={selectedImageUrl || ''}
+        onClose={handleCloseImageModal}
+      />
     </CardLayout>
   );
 };

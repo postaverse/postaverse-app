@@ -34,7 +34,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, onPress }) => (
     <CardLayout>
       <View style={searchStyles.userCard}>
         <Image
-          source={{ uri: user.profile_photo_url || 'https://via.placeholder.com/40' }}
+          source={{ uri: user.profile_photo_url }}
           style={searchStyles.userAvatar}
         />
         <View style={searchStyles.userInfo}>

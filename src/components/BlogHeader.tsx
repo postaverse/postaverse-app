@@ -60,7 +60,7 @@ export const BlogHeader: React.FC<BlogHeaderProps> = ({
       <View style={blogDetailStyles.blogHeader}>
         <TouchableOpacity style={blogDetailStyles.userInfo} onPress={onUserPress}>
           <Image
-            source={{ uri: user?.profile_photo_url || 'https://via.placeholder.com/48' }}
+            source={{ uri: user?.profile_photo_url }}
             style={blogDetailStyles.userAvatar}
             placeholder={{ blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' }}
             transition={1000}

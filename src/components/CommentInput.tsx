@@ -27,7 +27,7 @@ export const CommentInput: React.FC<CommentInputProps> = ({
   return (
     <View style={blogDetailStyles.commentInputContainer}>
       <Image
-        source={{ uri: user.profile_photo_url || 'https://via.placeholder.com/32' }}
+        source={{ uri: user.profile_photo_url }}
         style={blogDetailStyles.commentInputAvatar}
         placeholder={{ blurhash: 'L6PZfSi_.AyE_3t7t7R**0o#DgR4' }}
         transition={1000}

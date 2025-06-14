@@ -99,6 +99,8 @@ export interface BlogLike {
 export interface PostImage {
   id: string;
   url: string;
+  path: string;
+  filename: string;
   post_id: string;
   created_at: string;
   updated_at: string;
@@ -107,6 +109,8 @@ export interface PostImage {
 export interface BlogImage {
   id: string;
   url: string;
+  path: string;
+  filename: string;
   blog_id: string;
   created_at: string;
   updated_at: string;
