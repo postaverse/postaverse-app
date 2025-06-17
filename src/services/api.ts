@@ -15,7 +15,7 @@ import {
   UpdateProfileData,
 } from '../types';
 
-const IS_DEV = 0; // 1 for development, 0 for production
+const IS_DEV = 1; // 1 for development, 0 for production
 
 const BASE_URL = IS_DEV 
   ? 'http://localhost:8000/api'
@@ -311,6 +311,89 @@ export const notificationsAPI = {
 
   deleteNotification: async (id: string): Promise<void> => {
     await api.delete(`/notifications/${id}`);
+  },
+};
+
+// User blocking API
+export const blockingAPI = {
+  getBlockedUsers: async (): Promise<{ data: User[] }> => {
+    const response = await api.get('/users/blocked');
+    return response.data;
+  },
+
+  blockUser: async (userId: string): Promise<{ message: string }> => {
+    const response = await api.post(`/users/${userId}/block`);
+    return response.data;
+  },
+
+  unblockUser: async (userId: string): Promise<{ message: string }> => {
+    const response = await api.delete(`/users/${userId}/block`);
+    return response.data;
+  },
+};
+
+// Security API
+export const securityAPI = {
+  // Password management
+  updatePassword: async (data: { current_password: string; password: string; password_confirmation: string }): Promise<{ message: string }> => {
+    const response = await api.put('/user/password', data);
+    return response.data;
+  },
+
+  // Two-factor authentication
+  enableTwoFactor: async (): Promise<{ qr_code: string; recovery_codes: string[] }> => {
+    const response = await api.post('/user/two-factor-authentication');
+    return response.data;
+  },
+
+  confirmTwoFactor: async (code: string): Promise<{ message: string }> => {
+    const response = await api.post('/user/confirmed-two-factor-authentication', { code });
+    return response.data;
+  },
+
+  disableTwoFactor: async (): Promise<{ message: string }> => {
+    const response = await api.delete('/user/two-factor-authentication');
+    return response.data;
+  },
+
+  getRecoveryCodes: async (): Promise<{ recovery_codes: string[] }> => {
+    const response = await api.get('/user/two-factor-recovery-codes');
+    return response.data;
+  },
+
+  regenerateRecoveryCodes: async (): Promise<{ recovery_codes: string[] }> => {
+    const response = await api.post('/user/two-factor-recovery-codes');
+    return response.data;
+  },
+
+  // Browser sessions
+  getBrowserSessions: async (): Promise<{ sessions: any[] }> => {
+    const response = await api.get('/user/sessions');
+    return response.data;
+  },
+
+  logoutOtherSessions: async (password: string): Promise<{ message: string }> => {
+    const response = await api.delete('/user/other-browser-sessions', { data: { password } });
+    return response.data;
+  },
+
+  // Account deletion
+  deleteAccount: async (password: string): Promise<{ message: string }> => {
+    const response = await api.delete('/user', { data: { password } });
+    return response.data;
+  },
+};
+
+// Connected accounts API (if Socialstream is configured)
+export const connectedAccountsAPI = {
+  getConnectedAccounts: async (): Promise<{ connected_accounts: any[] }> => {
+    const response = await api.get('/user/connected-accounts');
+    return response.data;
+  },
+
+  removeConnectedAccount: async (accountId: string): Promise<{ message: string }> => {
+    const response = await api.delete(`/user/connected-accounts/${accountId}`);
+    return response.data;
   },
 };
 

@@ -21,7 +21,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#000000"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "net.postaverse.app"
     },
     "web": {
       "bundler": "metro",
@@ -33,6 +34,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "58af3ff0-ea1c-4927-80f8-104f602c2b2e"
+      }
+    },
+    "owner": "zanderlewis"
   }
 }

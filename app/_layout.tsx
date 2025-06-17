@@ -110,6 +110,26 @@ function RootLayoutNav() {
                 headerTitleStyle: { color: '#ffffff' },
               }} 
             />
+            <Stack.Screen 
+              name="blocked-users" 
+              options={{ 
+                headerShown: true,
+                title: 'Blocked Users',
+                headerStyle: { backgroundColor: '#000000' },
+                headerTintColor: '#ffffff',
+                headerTitleStyle: { color: '#ffffff' },
+              }} 
+            />
+            <Stack.Screen 
+              name="edit-profile" 
+              options={{ 
+                headerShown: true,
+                title: 'Edit Profile',
+                headerStyle: { backgroundColor: '#000000' },
+                headerTintColor: '#ffffff',
+                headerTitleStyle: { color: '#ffffff' },
+              }} 
+            />
           </Stack>
         </ThemeProvider>
       </View>

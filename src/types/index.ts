@@ -11,6 +11,7 @@ export interface User {
   following_count?: number;
   posts_count?: number;
   is_following?: boolean;
+  two_factor_confirmed_at?: string | null;
   created_at?: string;
   updated_at?: string;
 }
