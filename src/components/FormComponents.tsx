@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
-import { colors, spacing, borderRadius, fontSize, globalStyles, shadows } from '../styles';
+import { colors, spacing, borderRadius, fontSize, globalStyles, shadows, fontWeight } from '../styles';
 
 interface FormInputProps {
   label: string;
@@ -137,66 +137,73 @@ const styles = StyleSheet.create({
   inputLabel: {
     color: colors.text.secondary,
     fontSize: fontSize.base,
-    fontWeight: '600',
-    marginBottom: spacing.sm,
+    fontWeight: fontWeight.semibold as any,
+    marginBottom: spacing.md,
+    letterSpacing: -0.025,
   },
   input: {
-    backgroundColor: 'rgba(15, 23, 42, 0.5)', // Matching website input background
+    backgroundColor: colors.background.glass,
     borderWidth: 1,
-    borderColor: 'rgba(100, 116, 139, 0.3)', // Matching website border
-    borderRadius: borderRadius.md,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderRadius: 16,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
     fontSize: fontSize.base,
-    color: colors.text.secondary, // Slate 200 like website
-    minHeight: 48,
+    color: colors.text.primary,
+    minHeight: 56,
+    fontWeight: fontWeight.normal as any,
+    ...shadows.medium,
   },
   multilineInput: {
     minHeight: 120,
     textAlignVertical: 'top',
+    paddingTop: spacing.md,
   },
   inputError: {
     borderColor: colors.status.danger,
+    borderWidth: 2,
   },
   charCount: {
-    color: colors.text.quaternary,
-    fontSize: fontSize.xs,
+    color: colors.text.tertiary,
+    fontSize: fontSize.sm,
     textAlign: 'right',
-    marginTop: 4,
+    marginTop: spacing.xs,
+    fontWeight: fontWeight.medium as any,
   },
   errorText: {
     color: colors.status.danger,
-    fontSize: fontSize.xs,
-    marginTop: 4,
+    fontSize: fontSize.sm,
+    marginTop: spacing.xs,
+    fontWeight: fontWeight.medium as any,
   },
   button: {
-    borderRadius: borderRadius.md,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
-    // Add shadow like website buttons
     ...shadows.medium,
   },
   buttonSmall: {
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    minHeight: 36,
+    minHeight: 40,
+    borderRadius: 12,
   },
   buttonMedium: {
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
-    minHeight: 48,
+    minHeight: 56,
   },
   buttonLarge: {
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.lg,
-    minHeight: 56,
+    minHeight: 64,
   },
   buttonPrimary: {
-    backgroundColor: colors.accent.primary, // Sky blue like website
+    backgroundColor: colors.accent.primary,
   },
   buttonSecondary: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
   },
@@ -206,30 +213,31 @@ const styles = StyleSheet.create({
   buttonDisabled: {
     backgroundColor: colors.interactive.disabled,
     borderColor: colors.interactive.disabled,
-    boxShadow: 'none', // Remove shadow when disabled
+    shadowOpacity: 0,
+    elevation: 0,
   },
   buttonText: {
     fontSize: fontSize.base,
-    fontWeight: '600',
+    fontWeight: fontWeight.semibold as any,
   },
   buttonTextPrimary: {
     fontSize: fontSize.base,
-    fontWeight: '600',
+    fontWeight: fontWeight.semibold as any,
     color: colors.text.primary,
   },
   buttonTextSecondary: {
     fontSize: fontSize.base,
-    fontWeight: '600',
+    fontWeight: fontWeight.semibold as any,
     color: colors.text.secondary,
   },
   buttonTextDanger: {
     fontSize: fontSize.base,
-    fontWeight: '600',
+    fontWeight: fontWeight.semibold as any,
     color: colors.text.primary,
   },
   buttonTextDisabled: {
     fontSize: fontSize.base,
-    fontWeight: '600',
+    fontWeight: fontWeight.semibold as any,
     color: colors.text.quaternary,
   },
 });

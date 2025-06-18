@@ -69,7 +69,9 @@ export default function SettingsScreen() {
   }) => (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>{title}</Text>
-      {children}
+      <View style={styles.sectionCard}>
+        {children}
+      </View>
     </View>
   );
 
@@ -80,8 +82,9 @@ export default function SettingsScreen() {
     onPress?: () => void;
     rightElement?: React.ReactNode;
     showArrow?: boolean;
-  }> = ({ icon, title, subtitle, onPress, rightElement, showArrow = true }) => (
-    <TouchableOpacity style={styles.settingsItem} onPress={onPress}>
+    isLast?: boolean;
+  }> = ({ icon, title, subtitle, onPress, rightElement, showArrow = true, isLast = false }) => (
+    <TouchableOpacity style={[styles.settingsItem, isLast && styles.settingsItemLast]} onPress={onPress}>
       <View style={styles.settingsItemLeft}>
         <View style={styles.iconContainer}>
           <Ionicons name={icon as any} size={20} color={colors.accent.primary} />
@@ -106,12 +109,14 @@ export default function SettingsScreen() {
     subtitle?: string;
     value: boolean;
     onValueChange: (value: boolean) => void;
-  }> = ({ icon, title, subtitle, value, onValueChange }) => (
+    isLast?: boolean;
+  }> = ({ icon, title, subtitle, value, onValueChange, isLast = false }) => (
     <SettingsItem
       icon={icon}
       title={title}
       subtitle={subtitle}
       showArrow={false}
+      isLast={isLast}
       rightElement={
         <Switch
           value={value}
@@ -129,9 +134,19 @@ export default function SettingsScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Settings</Text>
+      </View>
+
+      <ScrollView 
+        style={styles.content} 
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
         {/* Profile Section */}
-        <SettingsSection title="Profile">
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Profile</Text>
           <View style={styles.profileCard}>
             <View style={styles.profileInfo}>
               <Image
@@ -151,7 +166,7 @@ export default function SettingsScreen() {
               <Text style={styles.editButtonText}>Edit</Text>
             </TouchableOpacity>
           </View>
-        </SettingsSection>
+        </View>
 
         {/* Preferences Section */}
         <SettingsSection title="Preferences">
@@ -161,6 +176,7 @@ export default function SettingsScreen() {
             subtitle="Get notified about new messages and updates"
             value={notificationsEnabled}
             onValueChange={setNotificationsEnabled}
+            isLast={true}
           />
         </SettingsSection>
 
@@ -177,6 +193,7 @@ export default function SettingsScreen() {
             title="Blocked Users"
             subtitle="Manage blocked accounts"
             onPress={handleBlockedUsers}
+            isLast={true}
           />
         </SettingsSection>
 
@@ -193,6 +210,7 @@ export default function SettingsScreen() {
             title="Delete Account"
             subtitle="Permanently delete your account"
             onPress={handleDeleteAccount}
+            isLast={true}
           />
         </SettingsSection>
 
@@ -203,12 +221,17 @@ export default function SettingsScreen() {
             title="Contact Us"
             subtitle="Send feedback or report issues"
             onPress={() => showAlert('Zander Lewis', 'Zander is the founder/developer of Postaverse. Contact him here: zander@zanderlewis.dev')}
+            isLast={true}
           />
+        </SettingsSection>
+
+        {/* Logout Section */}
+        <View style={styles.section}>
           <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
             <Ionicons name="log-out" size={20} color={colors.status.danger} />
             <Text style={styles.logoutText}>Sign Out</Text>
           </TouchableOpacity>
-        </SettingsSection>
+        </View>
       </ScrollView>
 
       <ConfirmationDialog
@@ -230,31 +253,71 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background.primary,
   },
+  header: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(31, 41, 55, 0.6)',
+  },
+  headerTitle: {
+    fontSize: fontSize.xxxl,
+    fontWeight: fontWeight.bold as any,
+    color: colors.text.primary,
+  },
   content: {
     flex: 1,
+    paddingTop: spacing.lg,
+  },
+  scrollContent: {
+    paddingBottom: spacing.xxxl,
   },
   section: {
-    marginBottom: spacing.xl,
+    marginBottom: spacing.xxl,
   },
   sectionTitle: {
     fontSize: fontSize.sm,
     fontWeight: fontWeight.semibold as any,
     color: colors.text.tertiary,
-    marginBottom: spacing.sm,
+    marginBottom: spacing.md,
     marginHorizontal: spacing.lg,
     textTransform: 'uppercase' as any,
-    letterSpacing: 0.5,
+    letterSpacing: 1,
+  },
+  sectionCard: {
+    backgroundColor: colors.background.glass,
+    marginHorizontal: spacing.lg,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
+    overflow: 'hidden',
   },
   profileCard: {
     backgroundColor: colors.background.glass,
     marginHorizontal: spacing.lg,
-    borderRadius: 12,
+    borderRadius: 16,
     padding: spacing.lg,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
   profileInfo: {
     flexDirection: 'row',
@@ -288,13 +351,13 @@ const styles = StyleSheet.create({
   editButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(56, 189, 248, 0.15)',
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    borderRadius: 8,
+    borderRadius: 10,
     gap: spacing.xs,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderColor: 'rgba(56, 189, 248, 0.3)',
   },
   editButtonText: {
     fontSize: fontSize.sm,
@@ -305,13 +368,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: spacing.md,
+    paddingVertical: spacing.lg,
     paddingHorizontal: spacing.lg,
-    backgroundColor: colors.background.glass,
-    marginHorizontal: spacing.lg,
-    marginBottom: 1,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  settingsItemLast: {
+    borderBottomWidth: 0,
   },
   settingsItemLeft: {
     flexDirection: 'row',
@@ -319,13 +382,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   iconContainer: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    backgroundColor: 'rgba(56, 189, 248, 0.1)',
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: 'rgba(56, 189, 248, 0.15)',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: spacing.md,
+    borderWidth: 1,
+    borderColor: 'rgba(56, 189, 248, 0.2)',
   },
   textContainer: {
     flex: 1,
@@ -347,13 +412,22 @@ const styles = StyleSheet.create({
   logoutButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: spacing.md,
+    justifyContent: 'center',
+    paddingVertical: spacing.lg,
     paddingHorizontal: spacing.lg,
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    backgroundColor: 'rgba(239, 68, 68, 0.15)',
     marginHorizontal: spacing.lg,
-    borderRadius: 8,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.2)',
+    borderColor: 'rgba(239, 68, 68, 0.3)',
+    shadowColor: '#ef4444',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   logoutText: {
     fontSize: fontSize.base,

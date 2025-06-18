@@ -130,6 +130,12 @@ function RootLayoutNav() {
                 headerTitleStyle: { color: '#ffffff' },
               }} 
             />
+            <Stack.Screen name="security" options={{ headerShown: false }} />
+            <Stack.Screen name="password-settings" options={{ headerShown: false }} />
+            <Stack.Screen name="two-factor-settings" options={{ headerShown: false }} />
+            <Stack.Screen name="browser-sessions" options={{ headerShown: false }} />
+            <Stack.Screen name="delete-account" options={{ headerShown: false }} />
+            <Stack.Screen name="connected-accounts" options={{ headerShown: false }} />
           </Stack>
         </ThemeProvider>
       </View>

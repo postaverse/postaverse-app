@@ -5,13 +5,14 @@ import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { useColorScheme } from '@/components/useColorScheme';
 import { useClientOnlyValue } from '@/components/useClientOnlyValue';
 import { useAuth } from '@/src/contexts/AuthContext';
-import { colors } from '@/src/styles';
+import { colors, spacing, fontSize, fontWeight, shadows } from '@/src/styles';
 
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof Ionicons>['name'];
   color: string;
+  size?: number;
 }) {
-  return <Ionicons size={24} style={{ marginBottom: -3 }} {...props} />;
+  return <Ionicons size={props.size || 20} style={{ marginBottom: -2 }} {...props} />;
 }
 
 // Custom tab bar component for two-row layout
@@ -65,15 +66,25 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
         testID={options.tabBarTestID}
         onPress={onPress}
         onLongPress={onLongPress}
-        style={customTabBarStyles.tabButton}
+        style={[
+          customTabBarStyles.tabButton,
+          isFocused && customTabBarStyles.tabButtonActive
+        ]}
       >
-        <TabBarIcon
-          name={getIconName(routeName) as any}
-          color={isFocused ? colors.accent.primary : colors.text.quaternary}
-        />
+        <View style={[
+          customTabBarStyles.iconContainer,
+          isFocused && customTabBarStyles.iconContainerActive
+        ]}>
+          <TabBarIcon
+            name={getIconName(routeName) as any}
+            color={isFocused ? colors.text.primary : colors.text.quaternary}
+            size={routeName === 'create' ? 22 : 18}
+          />
+        </View>
         <Text style={[
           customTabBarStyles.tabLabel,
-          { color: isFocused ? colors.accent.primary : colors.text.quaternary }
+          { color: isFocused ? colors.accent.primary : colors.text.quaternary },
+          isFocused && customTabBarStyles.tabLabelActive
         ]}>
           {label}
         </Text>
@@ -95,29 +106,49 @@ function CustomTabBar({ state, descriptors, navigation }: any) {
 
 const customTabBarStyles = StyleSheet.create({
   tabBar: {
-    backgroundColor: colors.background.primary,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: colors.background.glass,
+    borderTopColor: 'rgba(255, 255, 255, 0.15)',
     borderTopWidth: 1,
-    paddingTop: 8,
-    paddingBottom: 20,
-    paddingHorizontal: 8,
+    paddingTop: spacing.xs,
+    paddingBottom: spacing.md,
+    paddingHorizontal: spacing.xs,
+    ...shadows.large,
   },
   tabRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingVertical: 4,
+    paddingVertical: spacing.xs / 2,
   },
   tabButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    minWidth: 60,
+    paddingVertical: spacing.xs / 2,
+    paddingHorizontal: spacing.xs,
+    minWidth: 48,
+    borderRadius: 8,
+  },
+  tabButtonActive: {
+    backgroundColor: 'rgba(56, 189, 248, 0.15)',
+  },
+  iconContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    marginBottom: 2,
+  },
+  iconContainerActive: {
+    backgroundColor: colors.accent.primary,
+    ...shadows.small,
   },
   tabLabel: {
-    fontSize: 10,
-    marginTop: 2,
+    fontSize: fontSize.xs - 1,
     textAlign: 'center',
+    fontWeight: fontWeight.medium as any,
+  },
+  tabLabelActive: {
+    fontWeight: fontWeight.semibold as any,
   },
 });
 

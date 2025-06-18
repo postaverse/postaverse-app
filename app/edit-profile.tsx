@@ -29,7 +29,6 @@ export default function EditProfileScreen() {
   const [name, setName] = useState(user?.name || '');
   const [handle, setHandle] = useState(user?.handle || '');
   const [bio, setBio] = useState(user?.bio || '');
-  const [website, setWebsite] = useState(user?.website || '');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [hasChanges, setHasChanges] = useState(false);
 
@@ -38,10 +37,9 @@ export default function EditProfileScreen() {
     const changed = 
       name?.trim() !== user?.name ||
       handle?.trim() !== user?.handle ||
-      bio?.trim() !== user?.bio ||
-      website?.trim() !== user?.website;
+      bio?.trim() !== user?.bio
     setHasChanges(changed);
-  }, [name, handle, bio, website, user]);
+  }, [name, handle, bio, user]);
 
   // Handle hardware back button
   useFocusEffect(
@@ -103,15 +101,6 @@ export default function EditProfileScreen() {
       }
     }
 
-    if (website?.trim()) {
-      // Basic URL validation
-      try {
-        new URL(website.trim().startsWith('http') ? website.trim() : `https://${website.trim()}`);
-      } catch {
-        newErrors.website = 'Please enter a valid website URL';
-      }
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -134,10 +123,6 @@ export default function EditProfileScreen() {
     
     if (bio?.trim() !== user?.bio) {
       dataToUpdate.bio = bio?.trim();
-    }
-
-    if (website?.trim() !== user?.website) {
-      dataToUpdate.website = website?.trim();
     }
 
     // Only make the API call if there are changes
@@ -236,16 +221,6 @@ export default function EditProfileScreen() {
             errors.bio,
             true,
             160
-          )}
-
-          {renderFormField(
-            'Website',
-            website,
-            setWebsite,
-            'https://yourwebsite.com',
-            errors.website,
-            false,
-            100
           )}
 
           <View style={styles.helperTextContainer}>

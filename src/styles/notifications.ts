@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { colors, spacing } from './tokens';
+import { colors, spacing, fontSize, fontWeight, shadows } from './tokens';
 
 export const notificationStyles = StyleSheet.create({
   customHeader: {
@@ -9,7 +9,16 @@ export const notificationStyles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: colors.background.tertiary,
+    borderBottomColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: 'rgba(31, 41, 55, 0.6)',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 4,
   },
   headerLeft: {
     flexDirection: 'row',
@@ -17,22 +26,24 @@ export const notificationStyles = StyleSheet.create({
   },
   headerTitle: {
     color: colors.text.primary,
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: fontSize.xxxl,
+    fontWeight: fontWeight.bold as any,
+    letterSpacing: -0.5,
   },
   unreadBadge: {
     backgroundColor: colors.status.danger,
-    borderRadius: 10,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
+    borderRadius: 12,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 4,
     marginLeft: spacing.sm,
-    minWidth: 20,
+    minWidth: 24,
     alignItems: 'center',
+    ...shadows.small,
   },
   unreadBadgeText: {
     color: colors.text.primary,
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: fontSize.xs,
+    fontWeight: fontWeight.semibold as any,
   },
   headerActions: {
     flexDirection: 'row',
@@ -41,25 +52,28 @@ export const notificationStyles = StyleSheet.create({
   },
   selectButton: {
     paddingHorizontal: spacing.md,
-    paddingVertical: 6,
-    borderRadius: 16,
-    backgroundColor: colors.background.tertiary,
+    paddingVertical: spacing.sm,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
   },
   selectButtonText: {
     color: colors.text.primary,
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.semibold as any,
   },
   markAllButton: {
     paddingHorizontal: spacing.md,
-    paddingVertical: 6,
-    borderRadius: 16,
+    paddingVertical: spacing.sm,
+    borderRadius: 12,
     backgroundColor: colors.accent.primary,
+    ...shadows.small,
   },
   markAllText: {
     color: colors.text.primary,
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.semibold as any,
   },
   bulkActionsBar: {
     flexDirection: 'row',
@@ -67,9 +81,11 @@ export const notificationStyles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
-    backgroundColor: colors.background.secondary,
+    backgroundColor: colors.background.glass,
     borderBottomWidth: 1,
-    borderBottomColor: colors.background.tertiary,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.1)',
   },
   bulkActionsLeft: {
     flexDirection: 'row',
@@ -83,28 +99,32 @@ export const notificationStyles = StyleSheet.create({
   },
   selectAllButton: {
     paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
+    paddingVertical: spacing.xs,
+    borderRadius: 8,
+    backgroundColor: 'rgba(56, 189, 248, 0.1)',
   },
   selectAllText: {
     color: colors.accent.primary,
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.semibold as any,
   },
   selectedCount: {
-    color: colors.text.tertiary,
-    fontSize: 12,
+    color: colors.text.secondary,
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.medium as any,
   },
   bulkActionButton: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-    borderRadius: 8,
+    paddingVertical: spacing.xs,
+    borderRadius: 10,
     gap: 4,
+    ...shadows.small,
   },
   bulkActionText: {
-    fontSize: 11,
-    fontWeight: '500',
+    fontSize: fontSize.xs,
+    fontWeight: fontWeight.medium as any,
     color: colors.text.primary,
   },
   readButton: {
@@ -119,13 +139,22 @@ export const notificationStyles = StyleSheet.create({
   notificationCard: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    padding: 0, // CardLayout handles padding
+    padding: spacing.lg,
+    backgroundColor: colors.background.glass,
+    borderRadius: 16,
+    marginHorizontal: spacing.lg,
+    marginBottom: spacing.md,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    ...shadows.medium,
   },
   unreadNotification: {
-    backgroundColor: 'rgba(99, 102, 241, 0.1)', // Subtle accent background
+    backgroundColor: 'rgba(56, 189, 248, 0.15)',
+    borderColor: 'rgba(56, 189, 248, 0.3)',
   },
   selectedNotification: {
-    backgroundColor: 'rgba(99, 102, 241, 0.2)', // Slightly more pronounced
+    backgroundColor: 'rgba(56, 189, 248, 0.25)',
+    borderColor: 'rgba(56, 189, 248, 0.5)',
   },
   checkboxContainer: {
     marginRight: spacing.md,

@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { globalStyles, colors, fontSize } from '../styles';
+import { globalStyles, colors, fontSize, spacing, fontWeight } from '../styles';
 
 interface HeaderProps {
   title: string;
@@ -55,21 +55,31 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)', // Subtle border like website
+    borderBottomColor: 'rgba(255, 255, 255, 0.15)',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 4,
   },
   backButton: {
-    width: 40,
-    height: 40,
+    width: 44,
+    height: 44,
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
   headerTitle: {
-    fontSize: fontSize.xl,
-    fontWeight: '700',
-    letterSpacing: -0.025, // Letter spacing like website
+    fontSize: fontSize.xxxl,
+    fontWeight: fontWeight.bold as any,
+    letterSpacing: -0.5,
     flex: 1,
     textAlign: 'center',
   },
@@ -78,6 +88,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   placeholder: {
-    width: 40,
+    width: 44,
   },
 });

@@ -1,20 +1,19 @@
 import { StyleSheet } from 'react-native';
-import { colors, spacing, borderRadius, fontSize, shadows } from './tokens';
+import { colors, spacing, borderRadius, fontSize, shadows, fontWeight } from './tokens';
 
 export const postCardStyles = StyleSheet.create({
   container: {
-    marginHorizontal: spacing.sm,
-    marginBottom: spacing.xs,
+    marginHorizontal: spacing.lg,
+    marginBottom: spacing.md,
   },
 
   card: {
-    backgroundColor: 'rgba(31, 41, 55, 0.6)',
-    borderRadius: borderRadius.xl,
+    backgroundColor: colors.background.glass,
+    borderRadius: 20,
     padding: spacing.xl,
     marginVertical: spacing.sm,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    // Use the glass shadow from tokens
+    borderColor: 'rgba(255, 255, 255, 0.15)',
     ...shadows.glass,
   },
 
@@ -26,7 +25,7 @@ export const postCardStyles = StyleSheet.create({
     marginBottom: spacing.lg,
     paddingBottom: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
   },
 
   userInfo: {
@@ -35,33 +34,33 @@ export const postCardStyles = StyleSheet.create({
     flex: 1,
   },
 
-  // Profile image with ring like website
+  // Profile image with enhanced styling
   profileImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     marginRight: spacing.md,
     borderWidth: 2,
-    borderColor: 'rgba(56, 189, 248, 0.3)', // Sky 400 with opacity
+    borderColor: 'rgba(56, 189, 248, 0.4)',
   },
 
   userDetails: {
     flex: 1,
   },
 
-  // Username styling matching website's bold white text
+  // Username styling with improved typography
   userName: {
-    fontSize: fontSize.sm,
+    fontSize: fontSize.base,
     color: colors.text.primary,
-    fontWeight: '700',
+    fontWeight: fontWeight.bold as any,
     letterSpacing: -0.025,
-    marginBottom: 2,
+    marginBottom: 4,
   },
 
-  // Date styling matching website's gray text
+  // Date styling with better contrast
   postDate: {
-    fontSize: fontSize.xs,
-    color: colors.text.quaternary,
+    fontSize: fontSize.sm,
+    color: colors.text.tertiary,
   },
 
   // Post stats section
@@ -74,28 +73,34 @@ export const postCardStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginLeft: spacing.lg,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.md,
   },
 
   statText: {
     fontSize: fontSize.xs,
-    color: colors.text.quaternary,
+    color: colors.text.tertiary,
     marginLeft: 4,
+    fontWeight: fontWeight.medium as any,
   },
 
-  // Title styling matching website's hover effects
+  // Title styling with better typography
   titleContainer: {
     marginBottom: spacing.lg,
   },
 
   title: {
-    fontSize: fontSize.xl,
+    fontSize: fontSize.xxl,
     color: colors.text.primary,
-    fontWeight: '700',
-    letterSpacing: -0.025,
+    fontWeight: fontWeight.bold as any,
+    letterSpacing: -0.5,
     marginBottom: spacing.sm,
+    lineHeight: 32,
   },
 
-  // Content area
+  // Content area with improved readability
   content: {
     marginBottom: spacing.lg,
   },
@@ -103,10 +108,11 @@ export const postCardStyles = StyleSheet.create({
   contentText: {
     fontSize: fontSize.base,
     color: colors.text.secondary,
-    lineHeight: 27.2, // 1.7 * 16
+    lineHeight: 24,
+    fontWeight: fontWeight.normal as any,
   },
 
-  // Action buttons section
+  // Enhanced action buttons
   actions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -114,33 +120,36 @@ export const postCardStyles = StyleSheet.create({
     marginTop: spacing.lg,
     paddingTop: spacing.md,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+    borderTopColor: 'rgba(255, 255, 255, 0.08)',
   },
 
   actionButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: spacing.sm,
-    borderRadius: borderRadius.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: 'rgba(255, 255, 255, 0.12)',
+    minWidth: 80,
+    justifyContent: 'center',
   },
 
   actionButtonPressed: {
-    backgroundColor: colors.accent.primary,
-    borderColor: colors.accent.primary,
+    backgroundColor: 'rgba(56, 189, 248, 0.2)',
+    borderColor: 'rgba(56, 189, 248, 0.4)',
   },
 
   actionText: {
     fontSize: fontSize.sm,
-    color: colors.text.quaternary,
-    fontWeight: '500',
+    color: colors.text.tertiary,
+    fontWeight: fontWeight.medium as any,
     marginLeft: spacing.xs,
   },
 
   actionTextPressed: {
-    color: colors.text.primary,
+    color: colors.accent.primary,
   },
 
   // Primary button styling matching website's gradient buttons

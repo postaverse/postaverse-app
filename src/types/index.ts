@@ -161,5 +161,4 @@ export interface UpdateProfileData {
   name?: string;
   handle?: string;
   bio?: string;
-  website?: string;
 }

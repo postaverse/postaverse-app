@@ -1,18 +1,26 @@
 import { StyleSheet } from 'react-native';
-import { colors, spacing, borderRadius, fontSize } from './tokens';
+import { colors, spacing, borderRadius, fontSize, fontWeight, shadows } from './tokens';
 
 export const searchStyles = StyleSheet.create({
   header: {
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)', // Glass-morphism border
-    backgroundColor: 'rgba(31, 41, 55, 0.6)', // Glass-morphism background
+    borderBottomColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: 'rgba(31, 41, 55, 0.6)',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 4,
   },
   headerTitle: {
-    fontSize: fontSize.xxl,
-    fontWeight: '700',
-    letterSpacing: -0.025, // Website typography
+    fontSize: fontSize.xxxl,
+    fontWeight: fontWeight.bold as any,
+    letterSpacing: -0.5,
     color: colors.text.primary,
   },
   searchSection: {
@@ -58,47 +66,66 @@ export const searchStyles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.background.secondary,
-    borderRadius: 12,
+    backgroundColor: colors.background.glass,
+    borderRadius: 16,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
     marginBottom: spacing.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+    ...shadows.medium,
   },
   searchIcon: {
     marginRight: spacing.md,
+    color: colors.text.tertiary,
   },
   searchInput: {
     flex: 1,
-    fontSize: 16,
+    fontSize: fontSize.base,
     color: colors.text.primary,
+    fontWeight: fontWeight.normal as any,
   },
   clearButton: {
     marginLeft: spacing.md,
+    padding: spacing.xs,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
   tabContainer: {
     flexDirection: 'row',
     marginBottom: spacing.lg,
-    backgroundColor: colors.background.secondary,
-    borderRadius: 8,
+    backgroundColor: colors.background.glass,
+    borderRadius: 12,
     padding: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   tab: {
     flex: 1,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
-    borderRadius: 6,
+    borderRadius: 8,
     alignItems: 'center',
   },
   activeTab: {
     backgroundColor: colors.accent.primary,
+    shadowColor: colors.accent.primary,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
   },
   tabText: {
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.semibold as any,
     color: colors.text.tertiary,
   },
   activeTabText: {
     color: colors.text.primary,
+    fontWeight: fontWeight.bold as any,
   },
   
   // Section styles
@@ -113,61 +140,79 @@ export const searchStyles = StyleSheet.create({
     paddingHorizontal: spacing.sm,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.semibold as any,
     color: colors.text.primary,
+    letterSpacing: -0.25,
   },
   sectionCount: {
-    fontSize: 14,
+    fontSize: fontSize.sm,
     color: colors.text.tertiary,
-    backgroundColor: colors.background.secondary,
+    backgroundColor: 'rgba(56, 189, 248, 0.15)',
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
     borderRadius: 12,
+    fontWeight: fontWeight.medium as any,
   },
   sectionDivider: {
     height: 1,
-    backgroundColor: colors.background.tertiary,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     marginVertical: spacing.lg,
   },
 
-  // User card styles
+  // User card styles with improved design
   userCard: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: colors.background.glass,
+    borderRadius: 16,
+    padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+    marginBottom: spacing.md,
+    ...shadows.medium,
   },
   userAvatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     marginRight: spacing.md,
+    borderWidth: 2,
+    borderColor: 'rgba(56, 189, 248, 0.4)',
   },
   userInfo: {
     flex: 1,
   },
   userName: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.semibold as any,
     color: colors.text.primary,
-    marginBottom: 2,
+    marginBottom: 4,
+    letterSpacing: -0.25,
   },
   userHandle: {
-    fontSize: 14,
-    color: colors.text.tertiary,
-    marginBottom: 4,
+    fontSize: fontSize.sm,
+    color: colors.text.secondary,
+    marginBottom: spacing.xs,
+    fontWeight: fontWeight.medium as any,
   },
   userBio: {
-    fontSize: 12,
-    color: colors.text.secondary,
-    lineHeight: 16,
+    fontSize: fontSize.sm,
+    color: colors.text.tertiary,
+    lineHeight: 18,
   },
   userStats: {
     alignItems: 'flex-end',
   },
   userStat: {
-    fontSize: 12,
+    fontSize: fontSize.xs,
     color: colors.text.tertiary,
     marginBottom: 2,
+    fontWeight: fontWeight.medium as any,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    borderRadius: 8,
   },
   
   // Content card styles
