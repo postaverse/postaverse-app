@@ -13,9 +13,12 @@ import {
   CreatePostData,
   CreateBlogData,
   UpdateProfileData,
+  TwoFactorChallenge,
+  TwoFactorSetupData,
+  TwoFactorConfirmData,
 } from '../types';
 
-const IS_DEV = 1; // 1 for development, 0 for production
+const IS_DEV = 0; // 1 for development, 0 for production
 
 const BASE_URL = IS_DEV 
   ? 'http://localhost:8000/api'
@@ -58,8 +61,20 @@ api.interceptors.response.use(
 
 // Auth API
 export const authAPI = {
-  login: async (credentials: LoginCredentials): Promise<AuthUser> => {
+  login: async (credentials: LoginCredentials): Promise<AuthUser | TwoFactorChallenge> => {
     const response = await api.post('/login', credentials);
+    
+    // Check if 2FA challenge is required
+    if (response.data.two_factor || response.data.recovery) {
+      // Store credentials temporarily for 2FA challenge submission
+      await AsyncStorage.setItem('temp_credentials', JSON.stringify(credentials));
+      
+      return {
+        two_factor: response.data.two_factor || false,
+        recovery: response.data.recovery || false,
+      };
+    }
+    
     const { user, token } = response.data;
     
     // Store token and user data
@@ -106,6 +121,51 @@ export const authAPI = {
   getStoredUser: async (): Promise<User | null> => {
     const userData = await AsyncStorage.getItem('user');
     return userData ? JSON.parse(userData) : null;
+  },
+
+  // Two-Factor Authentication methods
+  setupTwoFactor: async (): Promise<TwoFactorSetupData> => {
+    const response = await api.post('/user/two-factor-authentication');
+    return response.data;
+  },
+
+  confirmTwoFactor: async (data: TwoFactorConfirmData): Promise<void> => {
+    await api.post('/user/confirmed-two-factor-authentication', data);
+  },
+
+  disableTwoFactor: async (): Promise<void> => {
+    await api.delete('/user/two-factor-authentication');
+  },
+
+  generateRecoveryCodes: async (): Promise<{ recovery_codes: string[] }> => {
+    const response = await api.post('/user/two-factor-recovery-codes');
+    return response.data;
+  },
+
+  // Submit two-factor challenge
+  submitTwoFactorChallenge: async (data: { code?: string; recovery_code?: string; login?: string; password?: string }): Promise<AuthUser> => {
+    // For 2FA challenge, we need to re-submit the login with the 2FA code
+    const storedCredentials = await AsyncStorage.getItem('temp_credentials');
+    if (!storedCredentials) {
+      throw new Error('No stored credentials for 2FA challenge');
+    }
+    
+    const credentials = JSON.parse(storedCredentials);
+    const response = await api.post('/login', {
+      ...credentials,
+      code: data.code || data.recovery_code,
+    });
+    
+    const { user, token } = response.data;
+    
+    // Store token and user data
+    await AsyncStorage.setItem('auth_token', token);
+    await AsyncStorage.setItem('user', JSON.stringify(user));
+    
+    // Clear temporary credentials
+    await AsyncStorage.removeItem('temp_credentials');
+    
+    return { user, token };
   },
 };
 
@@ -341,7 +401,7 @@ export const securityAPI = {
   },
 
   // Two-factor authentication
-  enableTwoFactor: async (): Promise<{ qr_code: string; recovery_codes: string[] }> => {
+  enableTwoFactor: async (): Promise<{ qr_code: string; secret_key: string; recovery_codes: string[] }> => {
     const response = await api.post('/user/two-factor-authentication');
     return response.data;
   },

@@ -8,10 +8,11 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { View, StatusBar } from 'react-native';
 import 'react-native-reanimated';
 
-import { AuthProvider } from '@/src/contexts/AuthContext';
+import { AuthProvider, useAuth } from '@/src/contexts/AuthContext';
 import { DialogProvider } from '@/src/contexts/DialogContext';
 import { globalStyles } from '@/src/styles';
 import { StarsBackground } from '@/src/components';
+import TwoFactorChallengeModal from '@/src/components/TwoFactorChallengeModal';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -69,6 +70,8 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
+  const { requiresTwoFactor, clearTwoFactorChallenge } = useAuth();
+  
   const customDarkTheme = {
     ...DarkTheme,
     colors: {
@@ -138,6 +141,12 @@ function RootLayoutNav() {
             <Stack.Screen name="connected-accounts" options={{ headerShown: false }} />
           </Stack>
         </ThemeProvider>
+        
+        {/* Two-Factor Authentication Challenge Modal */}
+        <TwoFactorChallengeModal
+          visible={requiresTwoFactor}
+          onClose={clearTwoFactorChallenge}
+        />
       </View>
     </View>
   );

@@ -135,6 +135,7 @@ export interface AuthUser {
 export interface LoginCredentials {
   login: string;
   password: string;
+  code?: string; // 2FA code
 }
 
 export interface RegisterCredentials {
@@ -143,6 +144,21 @@ export interface RegisterCredentials {
   email: string;
   password: string;
   password_confirmation: string;
+}
+
+export interface TwoFactorChallenge {
+  two_factor: boolean;
+  recovery: boolean;
+}
+
+export interface TwoFactorSetupData {
+  qr_code: string;
+  secret_key: string;
+  recovery_codes: string[];
+}
+
+export interface TwoFactorConfirmData {
+  code: string;
 }
 
 export interface CreatePostData {
